@@ -3,6 +3,8 @@
 
 #include <Windows.h>
 #include <iostream>
+#include <cstdlib>
+#include <time.h>
 using namespace std;
 
 const int LARGURA = 5;
@@ -18,14 +20,12 @@ const char QUEIJO = 'Q';
 const char PAREDE = 'P';
 const char ENTRADA = 'E';
 
-
 struct Rato{
     int posX = 0;
     int posY = 0;
     bool temQueijo = false;
     int deOndeVeio = ESQUERDA;  
 };
-
 
 void desenharMapa(char mapa[ALTURA][LARGURA]){
     for (int i = 0; i < ALTURA; i++){
@@ -34,6 +34,52 @@ void desenharMapa(char mapa[ALTURA][LARGURA]){
         } cout << endl;
     }
     cout << endl;
+}
+char construirMapa(char mapa[ALTURA][LARGURA]){
+    srand(time(NULL));  
+    int entradaPosX = rand() % 5;
+    int entradaPosY = rand() % 5;     
+
+    for (int i = 0; i < ALTURA; i++){
+        for (int j = 0; j < ALTURA; j++){
+            if (i < 4 and j == 1)
+                mapa[i][j] = PAREDE;
+            else if (i == 2 and j == 2)
+                mapa[i][j] = QUEIJO;
+            else if(i == entradaPosX and j == entradaPosY and mapa[i][j] != PAREDE and mapa[i][j] != QUEIJO)
+                mapa[i][j] = ENTRADA;
+            else
+                mapa[i][j] = VAZIO;
+        }
+    }
+    desenharMapa(mapa);
+    Sleep(1000);
+}
+
+
+int acharPosX(char mapa[ALTURA][LARGURA]){
+    for (int i = 0; i < ALTURA; i++){
+        for (int j = 0; j < ALTURA; j++){
+            if (mapa[i][j] == ENTRADA)
+                return i;
+        } 
+    } 
+}
+
+int acharPosY(char mapa[ALTURA][LARGURA]){
+    for (int i = 0; i < ALTURA; i++){
+        for (int j = 0; j < ALTURA; j++){
+            if (mapa[i][j] == ENTRADA)
+                return j;
+        } 
+    } 
+}
+
+void inicializarRato(Rato &rato, char mapa[ALTURA][LARGURA]){
+    rato.posX = acharPosX(mapa);
+    rato.posY = acharPosY(mapa);
+    rato.temQueijo = false;
+    rato.deOndeVeio =  ENTRADA;
 }
 
 bool procurarQueijo(char labirinto[LARGURA][ALTURA],int posX,int posY, int deOndeVeio, bool &temQueijo){
